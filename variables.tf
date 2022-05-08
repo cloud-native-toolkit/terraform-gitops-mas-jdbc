@@ -63,10 +63,10 @@ variable "git_credentials" {
   sensitive   = true
 }
 
-variable "namespace" {
+/*variable "namespace" {
   type        = string
   description = "The namespace where the application should be deployed"
-}
+}*/
 
 variable "kubeseal_cert" {
   type        = string
@@ -79,3 +79,43 @@ variable "server_name" {
   description = "The name of the server"
   default     = "default"
 }
+
+variable "appid" {
+  type        = string
+  description = "MAS AppID to deploy.  Expects: manage"
+  default     = "manage"
+}
+
+variable "workspace_id" {
+  type = string
+  description = "MAS workspace id"
+  
+}
+
+variable "db_user" {
+  type = string
+  sensitive = true
+  description = "database connection username"
+
+}
+
+variable "db_password" {
+  type = string
+  sensitive = true
+  description = "database connection password"
+  
+}
+
+variable "db_cert" {
+  type = string
+  sensitive = true
+  description = "database connection public cert"
+  
+}
+
+variable "db_url" {
+  type = string
+  sensitive = true
+  description = "database connection url"
+  
+} 

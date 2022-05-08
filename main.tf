@@ -1,62 +1,92 @@
 locals {
-  name          = "my-module"
-  bin_dir       = module.setup_clis.bin_dir
-  yaml_dir      = "${path.cwd}/.tmp/${local.name}/chart/${local.name}"
-  service_url   = "http://${local.name}.${var.namespace}"
-  values_content = {
-  }
-  layer = "services"
-  type  = "base"
+  name           = "ibm-mas-jdbc"
+  bin_dir        = module.setup_clis.bin_dir
+  tmp_dir        = "${path.cwd}/.tmp/${local.name}"
+  yaml_dir       = "${local.tmp_dir}/chart/${local.name}"
+  secret_dir     = "${local.tmp_dir}/secrets"
+  db_secret_name = "${var.instanceid}-jdbc-creds-wsapp-manage"
+  jdbc_name      = "${var.instanceid}-jdbc-wsapp-${var.workspace_id}-${var.appid}"
+  workspace_name = "${var.instanceid}-${var.workspace_id}"
+
+  layer              = "services"
+  type               = "operators"
   application_branch = "main"
-  namespace = var.namespace
-  layer_config = var.gitops_config[local.layer]
-}
+  //appname            = "ibm-mas-${var.appid}"
+  //namespace          = "mas-${var.instanceid}-${var.appid}"
+  namespace          = "mas-${var.instanceid}-core"
+  layer_config       = var.gitops_config[local.layer]
+  //installPlan        = var.installPlan
+ 
+# set values content for subscription
+  values_content = {
+      masapp = {
+        //name = local.appname
+        appid = var.appid
+        instanceid = var.instanceid
+        //namespace = local.namespace
+        //core-namespace = local.core-namespace
+        workspaceid = var.workspace_id
+      }
+      database = {
+        url = var.db_url
+        secretname = local.db_secret_name
+        jdbcname = local.jdbc_name
+
+      }
+      workspace = {
+        name = local.workspace_name
+      }
+    }
+} 
 
 module setup_clis {
   source = "github.com/cloud-native-toolkit/terraform-util-clis.git"
 }
 
-resource null_resource create_yaml {
+
+# Add jdbc config secret
+resource null_resource create_secret {
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/create-secret.sh '${local.core-namespace}' '${var.db_user}' '${var.db_password}' '${local.db_secret_name}' '${local.secret_dir}' '${local.name}-password'"
+  }
+}
+
+module seal_secrets {
+  depends_on = [null_resource.create_secret]
+
+  source = "github.com/cloud-native-toolkit/terraform-util-seal-secrets.git"
+
+  source_dir    = local.secret_dir
+  dest_dir      = "${local.yaml_dir}/templates"
+  kubeseal_cert = var.kubeseal_cert
+  label         = local.name
+} 
+
+# Add values for charts
+resource "null_resource" "setup_gitops" {
+  depends_on = [module.pullsecret]
+
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-yaml.sh '${local.name}' '${local.yaml_dir}'"
 
     environment = {
       VALUES_CONTENT = yamlencode(local.values_content)
+      DB_CERT = var.db_cert
     }
   }
 }
 
-resource null_resource setup_gitops {
-  depends_on = [null_resource.create_yaml]
+# Deploy
+resource gitops_module jdbcmodule {
+  depends_on = [null_resource.setup_gitops,module.seal_secrets,module.sbo]
 
-  triggers = {
-    name = local.name
-    namespace = var.namespace
-    yaml_dir = local.yaml_dir
-    server_name = var.server_name
-    layer = local.layer
-    type = local.type
-    git_credentials = yamlencode(var.git_credentials)
-    gitops_config   = yamlencode(var.gitops_config)
-    bin_dir = local.bin_dir
-  }
-
-  provisioner "local-exec" {
-    command = "${self.triggers.bin_dir}/igc gitops-module '${self.triggers.name}' -n '${self.triggers.namespace}' --contentDir '${self.triggers.yaml_dir}' --serverName '${self.triggers.server_name}' -l '${self.triggers.layer}' --type '${self.triggers.type}'"
-
-    environment = {
-      GIT_CREDENTIALS = nonsensitive(self.triggers.git_credentials)
-      GITOPS_CONFIG   = self.triggers.gitops_config
-    }
-  }
-
-  provisioner "local-exec" {
-    when = destroy
-    command = "${self.triggers.bin_dir}/igc gitops-module '${self.triggers.name}' -n '${self.triggers.namespace}' --delete --contentDir '${self.triggers.yaml_dir}' --serverName '${self.triggers.server_name}' -l '${self.triggers.layer}' --type '${self.triggers.type}'"
-
-    environment = {
-      GIT_CREDENTIALS = nonsensitive(self.triggers.git_credentials)
-      GITOPS_CONFIG   = self.triggers.gitops_config
-    }
-  }
+  name        = local.name
+  namespace   = local.namespace
+  content_dir = local.yaml_dir
+  server_name = var.server_name
+  layer       = local.layer
+  type        = local.type
+  branch      = local.application_branch
+  config      = yamlencode(var.gitops_config)
+  credentials = yamlencode(var.git_credentials)
 }
