@@ -47,7 +47,7 @@ module setup_clis {
 # Add jdbc config secret
 resource null_resource create_secret {
   provisioner "local-exec" {
-    command = "${path.module}/scripts/create-secret.sh '${local.core-namespace}' '${var.db_user}' '${var.db_password}' '${local.db_secret_name}' '${local.secret_dir}' '${local.name}-password'"
+    command = "${path.module}/scripts/create-secret.sh '${local.namespace}' '${var.db_user}' '${var.db_password}' '${local.db_secret_name}' '${local.secret_dir}' '${local.name}-password'"
   }
 }
 
@@ -64,7 +64,7 @@ module seal_secrets {
 
 # Add values for charts
 resource "null_resource" "setup_gitops" {
-  depends_on = [module.pullsecret]
+  depends_on = [module.seal_secrets]
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-yaml.sh '${local.name}' '${local.yaml_dir}'"
@@ -78,7 +78,7 @@ resource "null_resource" "setup_gitops" {
 
 # Deploy
 resource gitops_module jdbcmodule {
-  depends_on = [null_resource.setup_gitops,module.seal_secrets,module.sbo]
+  depends_on = [null_resource.setup_gitops]
 
   name        = local.name
   namespace   = local.namespace
