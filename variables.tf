@@ -92,6 +92,11 @@ variable "workspace_id" {
   
 }
 
+variable "instanceid" {
+  type        = string
+  description = "instance name for MAS - for example: masdemo or mas8 "
+}
+
 variable "db_user" {
   type = string
   sensitive = true
