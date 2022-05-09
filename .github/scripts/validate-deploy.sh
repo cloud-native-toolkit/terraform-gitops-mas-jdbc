@@ -63,7 +63,7 @@ fi
 export JDBCSTATUS=$(kubectl get jdbccfg ${CONFIG_NAME} -n ${NAMESPACE} --no-headers -o custom-columns=":status.conditions[0].reason")
 
 count=0
-until [[ [ ${JDBCSTATUS} != 'Ready' ] && [ $count -ne 10 ] ]]; do
+until [[ "${JDBCSTATUS}" = "Ready" ]] || [[ $count -eq 10 ]]; do
   echo "Waiting for ${CONFIG_NAME} in ${NAMESPACE}"
   count=$((count + 1))
   export JDBCSTATUS=$(kubectl get jdbccfg ${CONFIG_NAME} -n ${NAMESPACE} --no-headers -o custom-columns=":status.conditions[0].reason")
