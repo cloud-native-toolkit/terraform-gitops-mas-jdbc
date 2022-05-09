@@ -60,10 +60,13 @@ else
   sleep 30
 fi
 
+export JDBCSTATUS=$(kubectl get jdbccfg ${CONFIG_NAME} -n ${NAMESPACE} --no-headers -o custom-columns=":status.conditions[0].reason")
+
 count=0
-until kubectl get jdbccfg ${CONFIG_NAME} -n ${NAMESPACE} || [[ $count -eq 10 ]]; do
+until ${JDBCSTATUS} -eq 'Ready' || [[ $count -eq 10 ]]; do
   echo "Waiting for ${CONFIG_NAME} in ${NAMESPACE}"
   count=$((count + 1))
+  export JDBCSTATUS=$(kubectl get jdbccfg ${CONFIG_NAME} -n ${NAMESPACE} --no-headers -o custom-columns=":status.conditions[0].reason")
   sleep 60
 done
 
@@ -72,7 +75,6 @@ if [[ $count -eq 10 ]]; then
   kubectl get all -n "${NAMESPACE}"
   exit 1
 fi
-
 
 cd ..
 rm -rf .testrepo
