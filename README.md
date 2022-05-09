@@ -20,7 +20,7 @@ modules can help provide the required information:
 ## Example usage
 
 ```hcl-terraform
-module "mas_manage" {
+module "mas_jdbc" {
   source = "github.com/cloud-native-toolkit/terraform-gitops-mas-jdbc"
 
   gitops_config = module.gitops.gitops_config

@@ -11,20 +11,14 @@ locals {
   layer              = "services"
   type               = "operators"
   application_branch = "main"
-  //appname            = "ibm-mas-${var.appid}"
-  //namespace          = "mas-${var.instanceid}-${var.appid}"
   namespace          = "mas-${var.instanceid}-core"
   layer_config       = var.gitops_config[local.layer]
-  //installPlan        = var.installPlan
  
 # set values content for subscription
   values_content = {
       masapp = {
-        //name = local.appname
         appid = var.appid
         instanceid = var.instanceid
-        //namespace = local.namespace
-        //core-namespace = local.core-namespace
         workspaceid = var.workspace_id
       }
       database = {
@@ -32,7 +26,6 @@ locals {
         secretname = local.db_secret_name
         jdbcname = local.jdbc_name
         dbcert = var.db_cert
-
       }
       workspace = {
         name = local.workspace_name
@@ -72,7 +65,6 @@ resource "null_resource" "setup_gitops" {
 
     environment = {
       VALUES_CONTENT = yamlencode(local.values_content)
-      //DB_CERT = var.db_cert
     }
   }
 }

@@ -42,14 +42,6 @@ fi
 echo "Printing argocd/${LAYER}/cluster/${SERVER_NAME}/${TYPE}/${NAMESPACE}-${COMPONENT_NAME}.yaml"
 cat "argocd/${LAYER}/cluster/${SERVER_NAME}/${TYPE}/${NAMESPACE}-${COMPONENT_NAME}.yaml"
 
-#if [[ ! -f "payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/values.yaml" ]]; then
-#  echo "Application values not found - payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/values.yaml"
-#  exit 1
-#fi
-
-#echo "Printing payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/ibm-mas-man-op.yaml"
-#cat "payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/ibm-mas-man-op.yaml"
-
 echo "Printing payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/values.yaml"
 cat "payload/${LAYER}/namespace/${NAMESPACE}/${COMPONENT_NAME}/values.yaml"
 
@@ -69,7 +61,7 @@ else
 fi
 
 count=0
-until kubectl get get jdbccfg ${CONFIG_NAME} -n ${NAMESPACE} || [[ $count -eq 10 ]]; do
+until kubectl get jdbccfg ${CONFIG_NAME} -n ${NAMESPACE} || [[ $count -eq 10 ]]; do
   echo "Waiting for ${CONFIG_NAME} in ${NAMESPACE}"
   count=$((count + 1))
   sleep 60
@@ -81,7 +73,6 @@ if [[ $count -eq 10 ]]; then
   exit 1
 fi
 
-#kubectl rollout status "jdbccfg masdemo-jdbc-wsapp-demo-manage" -n "${NAMESPACE}" || exit 1
 
 cd ..
 rm -rf .testrepo

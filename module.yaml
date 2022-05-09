@@ -1,25 +1,18 @@
 name: gitops-terraform-gitops-mas-jdbc
 type: gitops
 description: >-
-  Module to populate a gitops repo with the resources to provision
-  terraform-gitops-mas-jdbc
+  Module to populate a gitops repo with a MAS JDBC Configuration
 tags:
   - tools
   - gitops
 versions:
   - platforms:
-      - kubernetes
-      - ocp3
       - ocp4
     dependencies:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
             version: '>= 1.1.0'
-      - id: namespace
-        refs:
-          - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -33,10 +26,6 @@ versions:
         moduleRef:
           id: gitops
           output: server_name
-      - name: namespace
-        moduleRef:
-          id: namespace
-          output: name
       - name: kubeseal_cert
         moduleRef:
           id: gitops
