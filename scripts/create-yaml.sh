@@ -16,9 +16,9 @@ if [[ -n "${VALUES_CONTENT}" ]]; then
   echo "${VALUES_CONTENT}" > "${DEST_DIR}/values.yaml"
 fi
 
-cat >> "${DEST_DIR}/values.yaml" << EOL
-
-dbcert:
-$(echo | awk -v ca_var="$DB_CERT" '{ printf ca_var; }' | sed 's/^/  /')
-
-EOL
+#cat >> "${DEST_DIR}/values.yaml" << EOL
+#
+#dbcert:
+#$(echo | awk -v ca_var="$DB_CERT" '{ printf ca_var; }' | sed 's/^/  /')
+#
+#EOL

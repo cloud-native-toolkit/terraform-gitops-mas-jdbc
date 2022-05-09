@@ -21,5 +21,5 @@ spec:
   type: external
   certificates:
     - alias: maximomanage
-      crt: |
-{{ .Values.dbcert | nindent 8 }}
+      crt: |-
+{{ .Values.database.dbcert | nindent 8 }}

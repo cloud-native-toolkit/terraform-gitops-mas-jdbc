@@ -31,6 +31,7 @@ locals {
         url = var.db_url
         secretname = local.db_secret_name
         jdbcname = local.jdbc_name
+        dbcert = var.db_cert
 
       }
       workspace = {
@@ -71,7 +72,7 @@ resource "null_resource" "setup_gitops" {
 
     environment = {
       VALUES_CONTENT = yamlencode(local.values_content)
-      DB_CERT = var.db_cert
+      //DB_CERT = var.db_cert
     }
   }
 }
