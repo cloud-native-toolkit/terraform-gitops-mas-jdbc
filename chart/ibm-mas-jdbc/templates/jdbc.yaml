@@ -2,7 +2,6 @@ apiVersion: config.mas.ibm.com/v1
 kind: JdbcCfg
 metadata:
   name: {{ .Values.database.jdbcname }}
-  //namespace: {{ .Values.masapp.core-namespace }}
   labels:
     mas.ibm.com/applicationId: {{ .Values.masapp.appid }}
     mas.ibm.com/configScope: workspace-application
