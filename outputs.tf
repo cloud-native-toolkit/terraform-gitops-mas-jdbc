@@ -41,3 +41,8 @@ output "config_name" {
   depends_on  = [gitops_module.jdbcmodule]
 }
 
+output "jdbc_secret_name" {
+  description = "The secret with the jdbc credentials"
+  value       = local.db_secret_name
+  depends_on  = [gitops_module.jdbcmodule]
+}
