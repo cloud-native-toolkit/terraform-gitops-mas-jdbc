@@ -8,7 +8,7 @@ module "gitops_module" {
 
   instanceid = "masdemo"
   workspace_id = "demo"
-  scope = "ws"
+  scope = "app"
 
   db_user = var.database_username
   db_password = var.database_password
