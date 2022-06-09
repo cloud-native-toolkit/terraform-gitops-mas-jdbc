@@ -60,3 +60,26 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+MAS JDBC scope-based labels
+*/}}
+{{- define "ibm-mas-jdbc.scopelabels" -}}
+mas.ibm.com/instanceId: {{ .Values.masapp.instanceid }}
+{{- if eq .Values.database.scope "wsapp" }}
+mas.ibm.com/configScope: workspace-application
+mas.ibm.com/workspaceId: {{ .Values.masapp.workspaceid }}
+mas.ibm.com/applicationId: {{ .Values.masapp.appid }}
+{{- end }}
+{{- if eq .Values.database.scope "ws" }}
+mas.ibm.com/configScope: workspace-application
+mas.ibm.com/workspaceId: {{ .Values.masapp.workspaceid }}
+{{- end }}
+{{- if eq .Values.database.scope "app" }}
+mas.ibm.com/configScope: application
+mas.ibm.com/applicationId: {{ .Values.masapp.appid }}
+{{- end }}
+{{- if eq .Values.database.scope "system" }}
+mas.ibm.com/configScope: system
+{{- end }}
+{{- end }}

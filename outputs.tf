@@ -46,3 +46,9 @@ output "jdbc_secret_name" {
   value       = local.db_secret_name
   depends_on  = [gitops_module.jdbcmodule]
 }
+
+output "scope" {
+  description = "scope for the jdbc connection"
+  value = var.scope
+  depends_on = [gitops_module.jdbcmodule]
+}
