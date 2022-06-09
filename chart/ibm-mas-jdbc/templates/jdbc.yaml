@@ -3,10 +3,7 @@ kind: JdbcCfg
 metadata:
   name: {{ .Values.database.jdbcname }}
   labels:
-    mas.ibm.com/applicationId: {{ .Values.masapp.appid }}
-    mas.ibm.com/configScope: workspace-application
-    mas.ibm.com/instanceId: {{ .Values.masapp.instanceid }}
-    mas.ibm.com/workspaceId: {{ .Values.masapp.workspaceid }}
+    {{- include "ibm-mas-jdbc.scopelabels" . | nindent 4 }}
     {{- include "ibm-mas-jdbc.labels" . | nindent 4 }}
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -19,7 +16,7 @@ spec:
   
   displayName: {{ .Values.database.url | quote }}
   type: external
-  certificates:
-    - alias: maximomanage
+  certificates: 
+    - alias: {{ .Values.masapp.appid | quote }}
       crt: |-
 {{ .Values.database.dbcert | nindent 8 }}

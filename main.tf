@@ -4,9 +4,10 @@ locals {
   tmp_dir        = "${path.cwd}/.tmp/${local.name}"
   yaml_dir       = "${local.tmp_dir}/chart/${local.name}"
   secret_dir     = "${local.tmp_dir}/secrets"
-  db_secret_name = "${var.instanceid}-jdbc-creds-wsapp-manage"
-  jdbc_name      = "${var.instanceid}-jdbc-wsapp-${var.workspace_id}-${var.appid}"
+  db_secret_name = "${var.instanceid}-jdbc-creds-${var.scope}-${var.appid}"
   workspace_name = "${var.instanceid}-${var.workspace_id}"
+  jdbc_name_sffx = var.scope == "wsapp" ? "${var.workspace_id}-${var.appid}" : (var.scope == "ws" ? "${var.workspace_id}" : "${var.appid}")
+  jdbc_name      = var.scope == "system" ? "${var.instanceid}-jdbc-${var.scope}" : "${var.instanceid}-jdbc-${var.scope}-${local.jdbc_name_sffx}"
 
   layer              = "services"
   type               = "operators"
@@ -26,6 +27,7 @@ locals {
         secretname = local.db_secret_name
         jdbcname = local.jdbc_name
         dbcert = var.db_cert
+        scope = var.scope
       }
       workspace = {
         name = local.workspace_name

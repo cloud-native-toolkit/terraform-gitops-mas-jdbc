@@ -119,3 +119,10 @@ variable "db_url" {
   description = "database connection url"
   
 } 
+
+variable "scope" {
+  type = string
+  description = "scope for the jdbc connection, valid values are: system, ws, wsapp, app"
+  default = "wsapp"
+
+}
