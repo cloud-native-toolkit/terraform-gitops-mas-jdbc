@@ -77,7 +77,7 @@ mas.ibm.com/workspaceId: {{ .Values.masapp.workspaceid }}
 {{- end }}
 {{- if eq .Values.database.scope "app" }}
 mas.ibm.com/configScope: application
-mas.ibm.com/workspaceId: {{ .Values.masapp.appid }}
+mas.ibm.com/applicationId: {{ .Values.masapp.appid }}
 {{- end }}
 {{- if eq .Values.database.scope "system" }}
 mas.ibm.com/configScope: system
